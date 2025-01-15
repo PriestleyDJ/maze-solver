@@ -107,3 +107,71 @@ class Maze:
         for i in range(self._num_cols):
             for j in range(self._num_rows):
                 self._cells[i][j].visited = False
+
+    def solve(self):
+        return self._solve_r(0, 0)
+
+    def _solve_r(self, i, j):
+        self._animate()
+        current_cell = self._cells[i][j]
+        current_cell.visited = True
+        if i == self._num_cols - 1 and j == self._num_rows - 1:
+            return True
+
+        # can move up
+        if (
+            j > 0
+            and not current_cell.has_top_wall
+            and not self._cells[i][j - 1].has_bottom_wall
+            and not self._cells[i][j - 1].visited
+        ):
+            cell_up = self._cells[i][j - 1]
+            current_cell.draw_move(cell_up)
+            if self._solve_r(i, j - 1):
+                return True
+            else:
+                current_cell.draw_move(cell_up, True)
+
+        # can move down
+        if (
+            j < self._num_rows - 1
+            and not current_cell.has_bottom_wall
+            and not self._cells[i][j + 1].has_top_wall
+            and not self._cells[i][j + 1].visited
+        ):
+            cell_down = self._cells[i][j + 1]
+            current_cell.draw_move(cell_down)
+            if self._solve_r(i, j + 1):
+                return True
+            else:
+                current_cell.draw_move(cell_down, True)
+
+        # can move left
+        if (
+            i > 0
+            and not current_cell.has_left_wall
+            and not self._cells[i - 1][j].has_right_wall
+            and not self._cells[i - 1][j].visited
+        ):
+            cell_left = self._cells[i - 1][j]
+            current_cell.draw_move(cell_left)
+            if self._solve_r(i - 1, j):
+                return True
+            else:
+                current_cell.draw_move(cell_left, True)
+
+        # can move right
+        if (
+            i < self._num_cols - 1
+            and not current_cell.has_right_wall
+            and not self._cells[i + 1][j].has_left_wall
+            and not self._cells[i + 1][j].visited
+        ):
+            cell_right = self._cells[i + 1][j]
+            current_cell.draw_move(cell_right)
+            if self._solve_r(i + 1, j):
+                return True
+            else:
+                current_cell.draw_move(cell_right, True)
+
+        return False
